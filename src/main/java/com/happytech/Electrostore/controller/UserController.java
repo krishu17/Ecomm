@@ -1,14 +1,19 @@
 package com.happytech.Electrostore.controller;
 
 import com.happytech.Electrostore.dto.UserDto;
+import com.happytech.Electrostore.payloads.ImageResponse;
 import com.happytech.Electrostore.payloads.PageableResponse;
+import com.happytech.Electrostore.service.FileService;
 import com.happytech.Electrostore.service.UserServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -16,6 +21,12 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserServiceI userServiceI;
+
+    @Autowired
+    private FileService fileService;
+
+    @Value("${user.profile.image.path}")
+    private  String imageUploadPath;
 
     //postMapping
     @PostMapping("/createUser")
@@ -90,6 +101,18 @@ public class UserController {
         return new ResponseEntity<>("User deleted successfully !", HttpStatus.OK);
 
     }
+    @PostMapping("/image/{userId}")
+    public ResponseEntity<ImageResponse> uploadUserImage(@RequestParam("userImage")MultipartFile image ,@PathVariable Long userId) throws IOException {
 
+        String imageName = fileService.uploadFile(image, imageUploadPath);
+
+        UserDto user = userServiceI.getUserById(userId);
+        user.setImageName(imageName);
+        UserDto userDto = userServiceI.updateUser(user, userId);
+
+        ImageResponse imageResponse = ImageResponse.builder().imageName(imageName).success(true).status(HttpStatus.CREATED).build();
+
+        return new ResponseEntity<>(imageResponse,HttpStatus.CREATED);
+    }
 
 }

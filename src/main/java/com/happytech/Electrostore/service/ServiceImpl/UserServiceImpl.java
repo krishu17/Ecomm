@@ -1,4 +1,4 @@
-package com.happytech.Electrostore.service;
+package com.happytech.Electrostore.service.ServiceImpl;
 
 import com.happytech.Electrostore.Helper.Helper;
 import com.happytech.Electrostore.config.AppConstants;
@@ -8,6 +8,7 @@ import com.happytech.Electrostore.entity.User;
 import com.happytech.Electrostore.exceptions.ResourceNotFoundException;
 import com.happytech.Electrostore.exceptions.ValueNotFoundException;
 import com.happytech.Electrostore.repo.UserRepo;
+import com.happytech.Electrostore.service.UserServiceI;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

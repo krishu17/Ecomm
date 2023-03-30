@@ -1,4 +1,4 @@
-package com.happytech.Electrostore.service;
+package com.happytech.Electrostore.service.ServiceImpl;
 
 import com.happytech.Electrostore.Helper.Helper;
 import com.happytech.Electrostore.config.AppConstants;
@@ -8,6 +8,7 @@ import com.happytech.Electrostore.entity.User;
 import com.happytech.Electrostore.exceptions.ResourceNotFoundException;
 import com.happytech.Electrostore.payloads.PageableResponse;
 import com.happytech.Electrostore.repo.CategoryRepo;
+import com.happytech.Electrostore.service.CategoryServiceI;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CategoryServiceImpl implements CategoryServiceI{
+public class CategoryServiceImpl implements CategoryServiceI {
     @Autowired
     private CategoryRepo catRepo;
 
