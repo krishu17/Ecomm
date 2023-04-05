@@ -13,7 +13,13 @@ public class AppConstants {
     public  static  final String YES = "yes";
     public static final String NO = "no";
 
+    public static  final String PRODUCT = "product";
 
+    public static final String PRODUCT_ID = "productId";
+
+    public static final String DESC = "desc";
+
+    public static final String ASC = "asc";
 
 
 }

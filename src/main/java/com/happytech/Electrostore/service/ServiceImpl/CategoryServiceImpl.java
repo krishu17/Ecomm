@@ -61,6 +61,7 @@ public class CategoryServiceImpl implements CategoryServiceI {
     public void deleteCategory(Long categoryId) {
 
         Category category = this.catRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.CATEGORY, AppConstants.CATEGORY_ID, categoryId));
+
         this.catRepo.delete(category);
 
     }

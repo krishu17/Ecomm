@@ -13,11 +13,17 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +35,9 @@ public class UserServiceImpl implements UserServiceI {
     private ModelMapper modelMapper;
     @Autowired
     private UserRepo userRepo;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -66,6 +75,21 @@ public class UserServiceImpl implements UserServiceI {
     public void deleteUserById(Long userId) {
 
         User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.USER, AppConstants.USER_ID, userId));
+        
+        //delete userImage profile
+        String fullPath = imagePath + user.getImageName();
+
+        try{
+            Path path = Paths.get(fullPath);
+            Files.delete(path);
+        }
+        catch(NoSuchFileException ex){
+        logger.info("User Image Not Found !!");
+        ex.printStackTrace();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
         user.setIsActive(AppConstants.NO);
 
@@ -91,11 +115,12 @@ public class UserServiceImpl implements UserServiceI {
 
          Page<User> page =userRepo.findAll(pagebale);
 
-//      List<User> collect = page.stream().filter(n -> n.getIsActive() == AppConstants.YES).collect(Collectors.toList());
+//      List<User> collect = page.stream().filter(n -> n.getIsActive().AppConstants.YES).collect(Collectors.toList());
 
 
        PageableResponse<UserDto> response = Helper.getPageableResponse(page, UserDto.class);
-      logger.info("Completed dao request for getAll users");
+
+       logger.info("Completed dao request for getAll users");
 
         return response;
 
