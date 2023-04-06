@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,9 +29,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Profile(value = {"dev","qa","prod","pilot"})
 public class UserServiceImpl implements UserServiceI {
 
-    Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -41,7 +43,7 @@ public class UserServiceImpl implements UserServiceI {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-
+        log.info("creating user ...");
         User user = this.modelMapper.map(userDto, User.class);
 
         user.setIsActive(AppConstants.YES);
@@ -49,13 +51,13 @@ public class UserServiceImpl implements UserServiceI {
         User savedUser = this.userRepo.save(user);
 
         UserDto userDto1 = this.modelMapper.map(savedUser, UserDto.class);
-
+        log.info("user created successfully !!");
         return userDto1;
     }
 
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
-
+        log.info("updating user ...");
         User map = this.modelMapper.map(userDto, User.class);
         User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.USER, AppConstants.USER_ID, userId));
 
@@ -68,12 +70,14 @@ public class UserServiceImpl implements UserServiceI {
 
         User save = this.userRepo.save(user);
 
-        return this.modelMapper.map(save, UserDto.class);
+        UserDto dto = this.modelMapper.map(save, UserDto.class);
+        log.info("user updated successfully !!");
+        return dto;
     }
 
     @Override
     public void deleteUserById(Long userId) {
-
+        log.info("checking for user id ...");
         User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.USER, AppConstants.USER_ID, userId));
         
         //delete userImage profile
@@ -84,7 +88,7 @@ public class UserServiceImpl implements UserServiceI {
             Files.delete(path);
         }
         catch(NoSuchFileException ex){
-        logger.info("User Image Not Found !!");
+        log.info("User Image Not Found !!");
         ex.printStackTrace();
         }
         catch (IOException e) {
@@ -94,20 +98,24 @@ public class UserServiceImpl implements UserServiceI {
         user.setIsActive(AppConstants.NO);
 
         this.userRepo.save(user);
+        log.info("user deleted successfully !!");
     }
 
     @Override
     public UserDto getUserById(Long userId) {
+        log.info("user getting ... !!");
         User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.USER, AppConstants.USER_ID, userId));
 
-        return this.modelMapper.map(user, UserDto.class);
+        UserDto dto = this.modelMapper.map(user, UserDto.class);
+        log.info("user got successfully !!");
+        return dto;
     }
 
 
   @Override
     public PageableResponse<UserDto> getAllUsers(int pageNumber, int pageSize, String sortBy, String sortDir) {
 
-        logger.info("Intitating dao request for getAllUsers");
+        log.info("Intitating dao request for getAllUsers");
 
         Sort sort=(sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
 
@@ -120,7 +128,7 @@ public class UserServiceImpl implements UserServiceI {
 
        PageableResponse<UserDto> response = Helper.getPageableResponse(page, UserDto.class);
 
-       logger.info("Completed dao request for getAll users");
+       log.info("Completed dao request for getAll users");
 
         return response;
 
@@ -129,25 +137,30 @@ public class UserServiceImpl implements UserServiceI {
 
     @Override
     public UserDto findByName(String name) {
-
+        log.info("getting user by name ...");
         User user = this.userRepo.findByName(name).orElseThrow(() -> new ValueNotFoundException(AppConstants.USER, AppConstants.USER_ID, name));
 
-        return this.modelMapper.map(user, UserDto.class);
+        UserDto dto = this.modelMapper.map(user, UserDto.class);
+        log.info("User found successfully...");
+        return dto;
 
     }
 
     @Override
     public UserDto findByEmailId(String emailId) {
-
+        log.info("getting user by email...");
         User user = this.userRepo.findByEmailId(emailId).orElseThrow(() -> new ValueNotFoundException(AppConstants.USER, AppConstants.USER_EMAIL, emailId));
-        return this.modelMapper.map(user, UserDto.class);
+        UserDto map = this.modelMapper.map(user, UserDto.class);
+        log.info("user with this email got successfully !!");
+        return map;
     }
 
     @Override
     public List<UserDto> searchByKeyword(String keyword) {
-
+        log.info("getting user by word...");
         List<User> byNameContaining = this.userRepo.findByNameContaining(keyword);
         List<UserDto> collect = byNameContaining.stream().map((str) -> this.modelMapper.map(str, UserDto.class)).collect(Collectors.toList());
+        log.info("user with this word got successfully !!");
         return collect;
     }
 

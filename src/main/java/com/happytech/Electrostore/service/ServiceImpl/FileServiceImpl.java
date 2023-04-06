@@ -5,6 +5,7 @@ import com.happytech.Electrostore.service.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 import static java.nio.file.Files.*;
 
 @Service
+@Profile(value = {"dev","qa","prod","pilot"})
 public class FileServiceImpl implements FileService {
 
 
@@ -53,11 +55,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public InputStream getResource(String path, String name) throws FileNotFoundException {
-
+        logger.info("getting resource file ...");
         String fullPath = path + File.separator+ name ;
 
         InputStream inputStream = new FileInputStream(fullPath);
 
+        logger.info("found resource file with name ..."+inputStream);
 
         return inputStream;
     }
