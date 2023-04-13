@@ -8,6 +8,7 @@ class ElectrostoreApplicationTests {
 
 	@Test
 	void contextLoads() {
+	System.out.println("Testing our project");
 	}
 
 }
