@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+    <property name="LOGS" value="./logs" />
+    <!-- this print for console -->
+    <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                <!--%d{MM:dd HH:mm:ss.SSS} [%t] [%level] [%logger{36}] - %m%n -->
+                <!-- 1) yyyy-MM-dd'T'HH:mm:ss.SSSZ which stands for year, month, day, hour, minute, second,
+                    2)  The -5 specifies the minimum width of the log level text and left-aligns it.
+                    3) This component specifies a custom field traceId which is stored in the MDC (Mapped Diagnostic Context). The %X{x-trace-id} part retrieves the value of the x-trace-id key from the MDC.
+                   4) [%green(%t)]: This component specifies the thread name. The %green part is used to format the thread name text in green color.
+                    5) %yellow(%logger{20}): This component specifies the logger name with a maximum length of 20 characters. -->
+                %white(%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}) %cyan(%-5level) [%highlight(traceId: %X{x-trace-id})] [%yellow(sourceIp: %X{x-source-ip})] [%cyan(userId: %X{x-userId})] [%green(%t)] %yellow(%logger{20})::%magenta(%L): -  %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="RollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- file name -->
+        <file>${LOGS}/electro_store.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                <!--%white(%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}) %highlight(%-5level) [%cyan(traceId: %X{x-trace-id})] [%cyan(sourceIp: %X{x-source-ip})] [%cyan(userId: %X{x-userId})] [%green(%t)] %yellow(%logger{20})::%magenta(%L): - %msg%n -->
+                %d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+            </pattern>
+        </encoder>
+        <!-- For time based rolling purpose we can also use here -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>app-%d{dd-MM-yyyy}.log</fileNamePattern>
+            <maxHistory>10</maxHistory>
+            <totalSizeCap>10KB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+    <!-- this is use for userdefine class login-->
+    <logger name="com.happytech.Electrostore" level="info" additivity="false">
+        <!-- additivity (Uniqueness): Any predefined class is going to be logged in userdefine classes/packages, it should not be done, it should be done separately.  -->
+        <appender-ref ref="ConsoleAppender"></appender-ref>
+        <appender-ref ref="RollingFileAppender"></appender-ref>
+    </logger>
+    <!-- this is use for predefine class/package login-->
+    <logger name="org.springframework.boot" level="info" additivity="false">
+        <appender-ref ref="ConsoleAppender"></appender-ref>
+        <appender-ref ref="RollingFileAppender"></appender-ref>
+    </logger>
+    <!-- Log the packages we have not defined in user defined packages means in  base package...  -->
+    <root level="info">
+        <appender-ref ref="ConsoleAppender"></appender-ref>
+        <appender-ref ref="RollingFileAppender"></appender-ref>
+
+    </root>
+
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+
+</configuration>
