@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 
 
 @Service
@@ -35,6 +36,10 @@ public class ProductServiceImpl implements ProductServiceI {
     public ProductDto createProduct(ProductDto productDto) {
         log.info("Creating productDto...");
         Product product = modelMapper.map(productDto, Product.class);
+
+        //adding date
+        product.setAddedDate(new Date());
+
         Product save = this.productRepo.save(product);
         ProductDto map = this.modelMapper.map(save, ProductDto.class);
         log.info("product created successfully !!");
@@ -55,6 +60,7 @@ public class ProductServiceImpl implements ProductServiceI {
         save.setTitle(productDto.getTitle());
         save.setLive(productDto.isLive());
         save.setStock(productDto.isStock());
+        save.setProductImageName(productDto.getProductImageName());
         Product save1 = this.productRepo.save(save);
 
         ProductDto map = this.modelMapper.map(save1, ProductDto.class);
