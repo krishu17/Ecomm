@@ -33,6 +33,8 @@ public class ProductDto {
     private boolean live;
     private double rating;
 
+    private String productImageName;
+
 //    private List<String> reviews;
 //    private List<String> features;
 //    private List<String> tags;

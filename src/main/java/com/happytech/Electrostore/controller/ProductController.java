@@ -1,18 +1,37 @@
 package com.happytech.Electrostore.controller;
 import com.happytech.Electrostore.dto.ProductDto;
+
 import com.happytech.Electrostore.payloads.ApiResponse;
+import com.happytech.Electrostore.payloads.ImageResponse;
 import com.happytech.Electrostore.payloads.PageableResponse;
+import com.happytech.Electrostore.service.FileService;
 import com.happytech.Electrostore.service.ProductServiceI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-@Autowired
+    Logger logger = LoggerFactory.getLogger(ProductController.class);
+    @Autowired
+    private FileService fileService;
+
+    @Value("${product.image.path}")
+    private String imagePath;
+    @Autowired
     private ProductServiceI productServiceI;
     @PostMapping("/createProduct")
     public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto productDto){
@@ -73,5 +92,31 @@ public class ProductController {
         return new ResponseEntity<>(keyword,HttpStatus.OK);
     }
 
+    //uploadingImage
+    @PostMapping("/image/{productId}")
+    public ResponseEntity<ImageResponse> uploadProductImage(
+            @PathVariable Long productId,
+            @RequestParam("productImage") MultipartFile image
+            ) throws IOException {
+
+        String fileName = fileService.uploadFile(image, imagePath);
+        ProductDto productDto = productServiceI.getSingleProductById(productId);
+        productDto.setProductImageName(fileName);
+
+        ProductDto dto = productServiceI.updateProduct(productDto, productId);
+        ImageResponse imeResponse = ImageResponse.builder().imageName(dto.getProductImageName()).message("Image name successfully Added").status(HttpStatus.CREATED).success(true).build();
+        return new ResponseEntity<>(imeResponse, HttpStatus.CREATED);
+    }
+
+    //serve Image
+    @GetMapping("/image/{productId}")
+    public void serveImage(@PathVariable Long productId, HttpServletResponse response) throws IOException {
+        ProductDto productById = productServiceI.getSingleProductById(productId);
+        logger.info("product image Name : {} ",productById.getProductImageName());
+        InputStream resource = fileService.getResource(imagePath, productById.getProductImageName());
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        // Note--> This is the case of serialization in our real Application
+        StreamUtils.copy(resource,response.getOutputStream());
+    }
 
 }

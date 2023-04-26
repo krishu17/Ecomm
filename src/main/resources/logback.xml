@@ -6,12 +6,6 @@
     <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                <!--%d{MM:dd HH:mm:ss.SSS} [%t] [%level] [%logger{36}] - %m%n -->
-                <!-- 1) yyyy-MM-dd'T'HH:mm:ss.SSSZ which stands for year, month, day, hour, minute, second,
-                    2)  The -5 specifies the minimum width of the log level text and left-aligns it.
-                    3) This component specifies a custom field traceId which is stored in the MDC (Mapped Diagnostic Context). The %X{x-trace-id} part retrieves the value of the x-trace-id key from the MDC.
-                   4) [%green(%t)]: This component specifies the thread name. The %green part is used to format the thread name text in green color.
-                    5) %yellow(%logger{20}): This component specifies the logger name with a maximum length of 20 characters. -->
                 %white(%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}) %cyan(%-5level) [%highlight(traceId: %X{x-trace-id})] [%yellow(sourceIp: %X{x-source-ip})] [%cyan(userId: %X{x-userId})] [%green(%t)] %yellow(%logger{20})::%magenta(%L): -  %msg%n
             </pattern>
         </encoder>

@@ -33,6 +33,10 @@ public class Product {
     private boolean live;
     private double rating;
 
+    private String productImageName;
+
+    @ManyToOne
+    private Category category;
 //    private List<String> reviews;
 //    private List<String> features;
 //    private List<String> tags;

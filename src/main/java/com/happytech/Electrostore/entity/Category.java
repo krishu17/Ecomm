@@ -1,11 +1,9 @@
 package com.happytech.Electrostore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -13,6 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name="categories")
+@Builder
 public class Category {
 
     @Column(name="catID")
@@ -25,5 +24,9 @@ public class Category {
     private String description;
     @Column(name = "CoverImage")
     private String coverImage;
+
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "categoryId")
+//    private List<Product> products;
 
 }
